@@ -1,0 +1,25 @@
+{
+  "name": "github-notion",
+  "version": "0.1.0",
+  "description": "GitHub and Notion integration for PR automation",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^16.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  }
+}
