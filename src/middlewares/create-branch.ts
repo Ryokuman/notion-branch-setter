@@ -35,7 +35,7 @@ const createBranch = async (context: CreatePRContext, next: () => Promise<void>)
     } catch (error) {
       // 브랜치명 충돌 시 자동 넘버링
       if (isBranchConflictError(error)) {
-        const newBranchName = await generateUniqueBranchName(taskInfo?.branch);
+        const newBranchName = await generateUniqueBranchName(taskInfo?.branch, currentRepository.repository_name);
         await createGitHubBranch({
           name: newBranchName,
           base: currentRepository.base_branch,
@@ -63,8 +63,8 @@ const isBranchConflictError = (error: any): error is BranchNameConflictError => 
 };
 
 // 유니크한 브랜치명 생성
-const generateUniqueBranchName = async (baseName: string): Promise<string> => {
-  const existingBranches = await listGitHubBranches();
+const generateUniqueBranchName = async (baseName: string, repository: string): Promise<string> => {
+  const existingBranches = await listGitHubBranches(repository);
   const similarBranches = existingBranches.filter((b) => b.startsWith(baseName));
 
   if (similarBranches.length === 0) return baseName;
