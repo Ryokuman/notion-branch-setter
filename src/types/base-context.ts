@@ -82,4 +82,13 @@ interface CreatePRContext extends BaseContext {
   };
 }
 
-export type { BaseContext, GitHubConfig, NotionConfig, TaskInfo, RequestReviewContext, CreatePRContext };
+export type {
+  BaseContext,
+  GitHubConfig,
+  NotionConfig,
+  TaskInfo,
+  RequestReviewContext,
+  CreatePRContext,
+  ReviewerSelectionStatus,
+  PRCreationStatus,
+};
