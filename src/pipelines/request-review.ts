@@ -9,4 +9,13 @@ export class RequestReviewPipeline extends Pipeline<RequestReviewContext> {
     super(context);
     this.use(validateConfig).use(validateNotionTask).use(selectReviewers);
   }
+
+  protected async beforeExecute(): Promise<void> {
+    this.updateContext((ctx) => ({
+      reviewerSelection: {
+        ...ctx.reviewerSelection,
+        status: "IN_PROGRESS",
+      },
+    }));
+  }
 }
