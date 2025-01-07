@@ -1,4 +1,4 @@
-import type { Config } from "./config";
+import type { Config, RepositoryConfig } from "./config";
 
 interface GitHubConfig {
   /** GitHub Personal Access Token */
@@ -37,6 +37,8 @@ interface BaseContext {
   config: Config;
 
   /** Notion 태스크 관련 정보 */
+  currentRepository: RepositoryConfig;
+
   taskInfo?: TaskInfo;
 }
 
@@ -80,4 +82,4 @@ interface CreatePRContext extends BaseContext {
   };
 }
 
-export type { BaseContext, GitHubConfig, NotionConfig, TaskInfo };
+export type { BaseContext, GitHubConfig, NotionConfig, TaskInfo, RequestReviewContext, CreatePRContext };
