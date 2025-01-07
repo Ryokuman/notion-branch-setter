@@ -1,3 +1,5 @@
+import type { Config } from "./config";
+
 interface GitHubConfig {
   /** GitHub Personal Access Token */
   token: string;
@@ -32,10 +34,7 @@ interface BaseContext {
   taskId: string;
 
   /** 애플리케이션 설정 정보 */
-  config: {
-    github: GitHubConfig;
-    notion: NotionConfig;
-  };
+  config: Config;
 
   /** Notion 태스크 관련 정보 */
   taskInfo?: TaskInfo;
