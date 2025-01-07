@@ -9,9 +9,20 @@ interface RecoverableError extends Error {
 /**
  * 설정 및 입력값 검증 에러
  */
-interface ValidationError extends RecoverableError {
+interface ValidationErrorData {
   field: string;
-  value: unknown;
+  message: string;
+}
+
+class ValidationError extends Error implements RecoverableError {
+  public readonly recoverable = false;
+  public readonly field: string;
+
+  constructor(data: ValidationErrorData) {
+    super(data.message);
+    this.name = "ValidationError";
+    this.field = data.field;
+  }
 }
 
 /**
@@ -23,4 +34,5 @@ interface APIError extends RecoverableError {
   retryCount: number;
 }
 
-export type { RecoverableError, ValidationError, APIError };
+export type { RecoverableError, ValidationErrorData, APIError };
+export { ValidationError };
