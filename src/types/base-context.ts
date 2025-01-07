@@ -72,14 +72,18 @@ interface RequestReviewContext extends BaseContext {
 }
 
 // Create-PR Context
-interface CreatePRContext extends BaseContext {
-  github: {
-    branchName: string;
-    prNumber?: number;
-    prUrl?: string;
-    status: PRCreationStatus;
-    template: { title: string }; // [${notion-id}]${task-name}
+interface GitHubContext {
+  branchName: string;
+  prNumber?: number;
+  prUrl?: string;
+  status: PRCreationStatus;
+  template: {
+    title: string;
   };
+}
+
+interface CreatePRContext extends BaseContext {
+  github: GitHubContext;
 }
 
 export type {
