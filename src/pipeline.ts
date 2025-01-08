@@ -1,10 +1,10 @@
 import type { BaseContext } from "./types/base-context";
 import type { Middleware, UpdateFunction } from "./types/middleware";
-import type { RecoverableError } from "./types/errors";
+import { RecoverableError, ValidationError } from "./types/errors";
 
-export class Pipeline<T extends BaseContext> {
+export abstract class Pipeline<T extends BaseContext> {
   private middlewares: Middleware<T>[] = [];
-  private context: T;
+  protected context: T;
 
   constructor(initialContext: T) {
     this.context = { ...initialContext };
@@ -27,25 +27,45 @@ export class Pipeline<T extends BaseContext> {
   }
 
   /**
+   * 파이프라인 실행 전 훅
+   */
+  protected async beforeExecute(): Promise<void> {}
+
+  /**
+   * 파이프라인 실행 후 훅
+   */
+  protected async afterExecute(): Promise<void> {}
+
+  /**
    * 파이프라인 실행
    */
   async execute(): Promise<T> {
+    try {
+      await this.beforeExecute();
+      await this.runMiddlewares();
+      await this.afterExecute();
+      return this.context;
+    } catch (error) {
+      await this.handleError(error as Error);
+      throw error;
+    }
+  }
+
+  /**
+   * 미들웨어 체인 실행
+   */
+  private async runMiddlewares(): Promise<void> {
     let index = 0;
 
     const executeMiddleware = async (): Promise<void> => {
       if (index < this.middlewares.length) {
         const middleware = this.middlewares[index];
         index++;
-        try {
-          await middleware(this.context, executeMiddleware);
-        } catch (error) {
-          await this.handleError(error as Error);
-        }
+        await middleware(this.context, executeMiddleware);
       }
     };
 
     await executeMiddleware();
-    return this.context;
   }
 
   /**
@@ -57,23 +77,25 @@ export class Pipeline<T extends BaseContext> {
       if (recoverableError.recover) {
         try {
           await recoverableError.recover();
-          // 복구 성공 시 재시도
           await this.execute();
           return;
         } catch (recoveryError) {
-          // 복구 실패 로깅
           console.error("Recovery failed:", recoveryError);
         }
       }
     }
-    // 복구 불가능한 에러는 그대로 전파
+
+    if (error instanceof ValidationError) {
+      console.error(`Validation failed: ${error.field} - ${error.message}`);
+    }
+
     throw error;
   }
 
   /**
-   * 에러가 복구 가능한지 확인
+   * 복구 가능한 에러인지 확인
    */
   private isRecoverable(error: Error): boolean {
-    return "recoverable" in error && (error as RecoverableError).recoverable === true;
+    return "recoverable" in error && (error as RecoverableError).recoverable;
   }
 }

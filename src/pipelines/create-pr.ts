@@ -10,4 +10,13 @@ export class CreatePRPipeline extends Pipeline<CreatePRContext> {
     super(context);
     this.use(validateConfig).use(validateNotionTask).use(createBranch).use(createPullRequest);
   }
+
+  protected async beforeExecute(): Promise<void> {
+    this.updateContext((ctx) => ({
+      github: {
+        ...ctx.github,
+        status: "INIT",
+      },
+    }));
+  }
 }
